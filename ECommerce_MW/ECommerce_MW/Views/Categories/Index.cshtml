@@ -1,23 +1,24 @@
-﻿@model IEnumerable<ECommerce_MW.DAL.Entities.Country>
+﻿@model IEnumerable<ECommerce_MW.DAL.Entities.Category>
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css" />
+<h1>Categorías</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-outline-primary">Crear nuevo país</a>
+    <a asp-action="Create" class="btn btn-outline-primary">Crear nueva categoría</a>
 </p>
 
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Países</h3>
+                <h3 class="panel-title">Categorías</h3>
             </div>
             <div class="panel-body">
-                <table class="table table-hover table-responsive table-striped" id="CountryTable">
+                <table class="table table-hover table-responsive table-striped" id="CategoryTable">
                     <thead>
                         <tr>
                             <th>
@@ -67,7 +68,7 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#CountryTable').DataTable({
+            $('#CategoryTable').DataTable({
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Spanish.json"
                 },
