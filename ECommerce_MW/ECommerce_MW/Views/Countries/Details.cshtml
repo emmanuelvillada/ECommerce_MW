@@ -10,7 +10,7 @@
     <partial name="../Shared/PartialViews/_CountryDetails.cshtml" />
 </div>
 <div>
-    <a asp-action="AddState" asp-route-id="@Model?.Id" class="btn btn-outline-primary">Crear Estado</a>
+    <a asp-action="AddState" asp-route-countryId="@Model?.Id" class="btn btn-outline-primary">Crear Estado</a>
     <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-warning">Editar</a>
     <a asp-action="Index" class="btn btn-outline-success">Regresar</a>
 </div>

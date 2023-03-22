@@ -18,7 +18,10 @@ namespace ECommerce_MW.Controllers
         // GET: Countries
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Countries.Include(c => c.States).ToListAsync());
+            //var x = await _context.Countries.ToListAsync();
+
+            var x = await _context.Countries.Include(c => c.States).ToListAsync();
+            return View(x);
         }
 
         // GET: Countries/Details/5
