@@ -15,6 +15,12 @@ namespace ECommerce_MW.Controllers
             _context = context;
         }
 
+        private async Task<Country> GetCountryById(Guid? id )
+        {
+            Country country = await _context.Countries.FirstOrDefaultAsync(c => c.Id == id);
+            return country;
+        }
+
         // GET: Countries
         public async Task<IActionResult> Index()
         {
@@ -53,9 +59,10 @@ namespace ECommerce_MW.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(country);
                 try
                 {
+                    country.CreatedDate = DateTime.Now;
+                    _context.Add(country);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -86,7 +93,7 @@ namespace ECommerce_MW.Controllers
                 return NotFound();
             }
 
-            var country = await _context.Countries.FindAsync(id);
+            var country = await GetCountryById(id);
             if (country == null)
             {
                 return NotFound();
@@ -110,6 +117,7 @@ namespace ECommerce_MW.Controllers
             {
                 try
                 {
+                    country.ModifiedDate = DateTime.Now;
                     _context.Update(country);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -177,7 +185,7 @@ namespace ECommerce_MW.Controllers
                 return NotFound();
             }
 
-            Country country = await _context.Countries.FindAsync(countryId);
+            Country country = await GetCountryById(countryId);
             if (country == null)
             {
                 return NotFound();
@@ -202,10 +210,10 @@ namespace ECommerce_MW.Controllers
                     State state = new State()
                     {
                         Cities = new List<City>(),
-                        Country = await _context.Countries.FindAsync(stateViewModel.CountryId),
+                        Country = await GetCountryById(stateViewModel.CountryId),
                         Name = stateViewModel.Name,
-                        CreatedDate = stateViewModel.CreatedDate,
-                        ModifiedDate = DateTime.Now,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = null,
                     };
 
                     _context.Add(state);

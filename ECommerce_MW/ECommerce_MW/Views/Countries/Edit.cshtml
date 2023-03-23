@@ -11,6 +11,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedDate" />
             <partial name="../Shared/PartialViews/_Country.cshtml" />
             <div class="form-group">
                 <input type="submit" value="Guardar" class="btn btn-outline-primary" />
