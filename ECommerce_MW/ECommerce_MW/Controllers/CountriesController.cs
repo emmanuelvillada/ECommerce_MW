@@ -15,9 +15,9 @@ namespace ECommerce_MW.Controllers
             _context = context;
         }
 
-        private async Task<Country> GetCountryById(Guid? id )
+        private async Task<Country> GetCountryById(Guid? countryId)
         {
-            Country country = await _context.Countries.FirstOrDefaultAsync(c => c.Id == id);
+            Country country = await _context.Countries.FirstOrDefaultAsync(c => c.Id == countryId);
             return country;
         }
 
@@ -31,16 +31,16 @@ namespace ECommerce_MW.Controllers
         }
 
         // GET: Countries/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        public async Task<IActionResult> Details(Guid? countryId)
         {
-            if (id == null || _context.Countries == null)
+            if (countryId == null || _context.Countries == null)
             {
                 return NotFound();
             }
 
             var country = await _context.Countries
                 .Include(c => c.States)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == countryId);
             if (country == null)
             {
                 return NotFound();
@@ -87,14 +87,14 @@ namespace ECommerce_MW.Controllers
         }
 
         // GET: Countries/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid? countryId)
         {
-            if (id == null || _context.Countries == null)
+            if (countryId == null || _context.Countries == null)
             {
                 return NotFound();
             }
 
-            var country = await GetCountryById(id);
+            var country = await GetCountryById(countryId);
             if (country == null)
             {
                 return NotFound();
@@ -143,16 +143,16 @@ namespace ECommerce_MW.Controllers
         }
 
         // GET: Countries/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        public async Task<IActionResult> Delete(Guid? countryId)
         {
-            if (id == null || _context.Countries == null)
+            if (countryId == null || _context.Countries == null)
             {
                 return NotFound();
             }
 
             Country country = await _context.Countries
                 .Include(c => c.States)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == countryId);
             if (country == null)
             {
                 return NotFound();
