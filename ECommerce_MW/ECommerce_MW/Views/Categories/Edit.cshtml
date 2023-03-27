@@ -11,7 +11,7 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <partial name="../Shared/PartialViews/_Category.cshtml" />
+            <partial name="../Shared/PartialViews/_CategoryCreateEdit.cshtml" />
             <div class="form-group">
                 <input type="submit" value="Guardar" class="btn btn-outline-primary" />
                 <a asp-action="Index" class="btn btn-outline-success">Regresar</a>

@@ -15,11 +15,10 @@
             <input type="hidden" asp-for="CountryId" />
             <input type="hidden" asp-for="CreatedDate" />
 
-            <partial name="../Shared/PartialViews/_State.cshtml" />
+            <partial name="../Shared/PartialViews/_StateCreateEdit.cshtml" />
             <div class="form-group">
                 <input type="submit" value="Guardar" class="btn btn-outline-primary" />
                 <a asp-action="Details" asp-route-countryId="@Model?.CountryId" class="btn btn-outline-success">Regresar</a>
-                @*<a asp-action="Index" class="btn btn-outline-success">Regresar</a>*@
             </div>
         </form>
     </div>
