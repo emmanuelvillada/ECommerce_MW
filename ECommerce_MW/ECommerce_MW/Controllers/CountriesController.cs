@@ -319,6 +319,59 @@ namespace ECommerce_MW.Controllers
             return View(stateViewModel);
         }
 
+        public async Task<IActionResult> DetailsState(Guid? stateId)
+        {
+            if (stateId == null || _context.States == null) return NotFound();
+
+            State state = await _context.States
+                .Include(s => s.Country)
+                .Include(c => c.Cities)
+                .FirstOrDefaultAsync(m => m.Id == stateId);
+
+            if (state == null) return NotFound();
+
+            return View(state);
+        }
+
+        public async Task<IActionResult> DeleteState(Guid? countryId)
+        {
+            if (countryId == null || _context.Countries == null)
+            {
+                return NotFound();
+            }
+
+            Country country = await _context.Countries
+                .Include(c => c.States)
+                .FirstOrDefaultAsync(c => c.Id == countryId);
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            return View(country);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStateConfirmed(Guid id)
+        {
+            if (_context.Countries == null)
+            {
+                return Problem("Entity set 'DatabaseContext.Countries' is null.");
+            }
+            var country = await _context.Countries
+                .Include(c => c.States)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (country != null)
+            {
+                _context.Countries.Remove(country);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
         #endregion
 
         #region City Actions
