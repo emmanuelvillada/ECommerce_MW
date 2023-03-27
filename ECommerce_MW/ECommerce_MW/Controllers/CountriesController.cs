@@ -369,6 +369,166 @@ namespace ECommerce_MW.Controllers
 
         #region City Actions
 
+        [HttpGet]
+        public async Task<IActionResult> AddCity(Guid? stateId)
+        {
+            if (stateId == null) return NotFound();
+
+            State state = await GetStateById(stateId);
+
+            if (state == null) return NotFound();
+
+            CityViewModel cityViewModel = new()
+            {
+                StateId = state.Id,
+            };
+
+            return View(cityViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCity(CityViewModel cityViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    City city = new()
+                    {
+                        State = await GetStateById(cityViewModel.StateId),
+                        Name = cityViewModel.Name,
+                        CreatedDate = DateTime.Now,
+                        ModifiedDate = null,
+                    };
+
+                    _context.Add(city);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(DetailsState), new { stateId = cityViewModel.StateId });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                        ModelState.AddModelError(string.Empty, "Ya existe una ciudad con el mismo nombre en este Dpto/Estado.");
+                    else
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+            return View(cityViewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditCity(Guid? stateId)
+        {
+            if (stateId == null || _context.States == null)
+            {
+                return NotFound();
+            }
+
+            State state = await _context.States
+                .Include(s => s.Country)
+                .FirstOrDefaultAsync(s => s.Id == stateId);
+
+            if (state == null)
+            {
+                return NotFound();
+            }
+
+            StateViewModel stateViewModel = new()
+            {
+                CountryId = state.Country.Id,
+                Id = state.Id,
+                Name = state.Name,
+                CreatedDate = state.CreatedDate,
+            };
+
+            return View(stateViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCity(Guid countryId, StateViewModel stateViewModel)
+        {
+            if (countryId != stateViewModel.CountryId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    State state = new()
+                    {
+                        Id = stateViewModel.Id,
+                        Name = stateViewModel.Name,
+                        CreatedDate = stateViewModel.CreatedDate,
+                        ModifiedDate = DateTime.UtcNow,
+                    };
+
+                    _context.Update(state);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Details), new { stateViewModel.CountryId });
+                }
+                catch (DbUpdateException dbUpdateException)
+                {
+                    if (dbUpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "Ya existe un estado con el mismo nombre.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+            return View(stateViewModel);
+        }
+
+        public async Task<IActionResult> DetailsCity(Guid? stateId)
+        {
+            if (stateId == null || _context.States == null) return NotFound();
+
+            State state = await GetStateById(stateId);
+
+            if (state == null) return NotFound();
+
+            return View(state);
+        }
+
+        public async Task<IActionResult> DeleteCity(Guid? stateId)
+        {
+            if (stateId == null || _context.States == null) return NotFound();
+
+            State state = await GetStateById(stateId);
+
+            if (state == null) return NotFound();
+
+            return View(state);
+        }
+
+        [HttpPost, ActionName("DeleteCity")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCityConfirmed(Guid stateId)
+        {
+            if (_context.States == null) return Problem("Entity set 'DatabaseContext.States' is null.");
+
+            State state = await GetStateById(stateId);
+
+            if (state != null) _context.States.Remove(state);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Details), new { countryId = state.Country.Id });
+        }
+
 
 
         #endregion
