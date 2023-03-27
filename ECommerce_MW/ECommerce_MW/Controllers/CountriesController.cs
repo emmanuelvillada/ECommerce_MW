@@ -333,43 +333,35 @@ namespace ECommerce_MW.Controllers
             return View(state);
         }
 
-        public async Task<IActionResult> DeleteState(Guid? countryId)
+        public async Task<IActionResult> DeleteState(Guid? stateId)
         {
-            if (countryId == null || _context.Countries == null)
-            {
-                return NotFound();
-            }
+            if (stateId == null || _context.States == null) return NotFound();
 
-            Country country = await _context.Countries
-                .Include(c => c.States)
-                .FirstOrDefaultAsync(c => c.Id == countryId);
-            if (country == null)
-            {
-                return NotFound();
-            }
+            State state = await _context.States
+                .Include(s => s.Country)
+                .Include(c => c.Cities)
+                .FirstOrDefaultAsync(c => c.Id == stateId);
 
-            return View(country);
+            if (state == null) return NotFound();
+
+            return View(state);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeleteState")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteStateConfirmed(Guid id)
+        public async Task<IActionResult> DeleteStateConfirmed(Guid stateId)
         {
-            if (_context.Countries == null)
-            {
-                return Problem("Entity set 'DatabaseContext.Countries' is null.");
-            }
-            var country = await _context.Countries
-                .Include(c => c.States)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            if (_context.States == null) return Problem("Entity set 'DatabaseContext.States' is null.");
 
-            if (country != null)
-            {
-                _context.Countries.Remove(country);
-            }
+            State state = await _context.States
+                .Include(s => s.Country)
+                .Include(c => c.Cities)
+                .FirstOrDefaultAsync(c => c.Id == stateId);
+
+            if (state != null) _context.States.Remove(state);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { countryId = state.Country.Id });
         }
 
         #endregion
