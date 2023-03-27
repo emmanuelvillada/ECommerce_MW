@@ -8,6 +8,8 @@ namespace ECommerce_MW.Controllers
 {
     public class CountriesController : Controller
     {
+        #region Constructor
+
         private readonly DatabaseContext _context;
 
         public CountriesController(DatabaseContext context)
@@ -15,38 +17,27 @@ namespace ECommerce_MW.Controllers
             _context = context;
         }
 
+        #endregion
+
+        #region Private Methods
         private async Task<Country> GetCountryById(Guid? countryId)
         {
-            Country country = await _context.Countries.FirstOrDefaultAsync(c => c.Id == countryId);
+            Country country = await _context.Countries
+                .Include(c => c.States)
+                .FirstOrDefaultAsync(c => c.Id == countryId);
+
             return country;
         }
 
-        // GET: Countries
+        #endregion
+
+        #region Country Actions
+
         public async Task<IActionResult> Index()
         {
-            //var x = await _context.Countries.ToListAsync();
-
-            var x = await _context.Countries.Include(c => c.States).ToListAsync();
-            return View(x);
-        }
-
-        // GET: Countries/Details/5
-        public async Task<IActionResult> Details(Guid? countryId)
-        {
-            if (countryId == null || _context.Countries == null)
-            {
-                return NotFound();
-            }
-
-            var country = await _context.Countries
+            return View(await _context.Countries
                 .Include(c => c.States)
-                .FirstOrDefaultAsync(m => m.Id == countryId);
-            if (country == null)
-            {
-                return NotFound();
-            }
-
-            return View(country);
+                .ToListAsync());
         }
 
         public IActionResult Create()
@@ -86,7 +77,6 @@ namespace ECommerce_MW.Controllers
             return View(country);
         }
 
-        // GET: Countries/Edit/5
         public async Task<IActionResult> Edit(Guid? countryId)
         {
             if (countryId == null || _context.Countries == null)
@@ -102,9 +92,6 @@ namespace ECommerce_MW.Controllers
             return View(country);
         }
 
-        // POST: Countries/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, Country country)
@@ -142,7 +129,24 @@ namespace ECommerce_MW.Controllers
             return View(country);
         }
 
-        // GET: Countries/Delete/5
+        public async Task<IActionResult> Details(Guid? countryId)
+        {
+            if (countryId == null || _context.Countries == null)
+            {
+                return NotFound();
+            }
+
+            var country = await _context.Countries
+                .Include(c => c.States)
+                .FirstOrDefaultAsync(m => m.Id == countryId);
+            if (country == null)
+            {
+                return NotFound();
+            }
+
+            return View(country);
+        }
+
         public async Task<IActionResult> Delete(Guid? countryId)
         {
             if (countryId == null || _context.Countries == null)
@@ -161,7 +165,6 @@ namespace ECommerce_MW.Controllers
             return View(country);
         }
 
-        // POST: Countries/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -183,19 +186,18 @@ namespace ECommerce_MW.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        #endregion
+
+        #region State Actions
+
         [HttpGet]
         public async Task<IActionResult> AddState(Guid? countryId)
         {
-            if (countryId == null)
-            {
-                return NotFound();
-            }
+            if (countryId == null) return NotFound();
 
             Country country = await GetCountryById(countryId);
-            if (country == null)
-            {
-                return NotFound();
-            }
+
+            if (country == null) return NotFound();
 
             StateViewModel stateViewModel = new()
             {
@@ -224,7 +226,7 @@ namespace ECommerce_MW.Controllers
 
                     _context.Add(state);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Details), new { Id = stateViewModel.CountryId });
+                    return RedirectToAction(nameof(Details), new { stateViewModel.CountryId });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
@@ -296,7 +298,7 @@ namespace ECommerce_MW.Controllers
 
                     _context.Update(state);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Details), new { Id = stateViewModel.CountryId });
+                    return RedirectToAction(nameof(Details), new { stateViewModel.CountryId });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
@@ -316,5 +318,13 @@ namespace ECommerce_MW.Controllers
             }
             return View(stateViewModel);
         }
+
+        #endregion
+
+        #region City Actions
+
+
+
+        #endregion
     }
 }

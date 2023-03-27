@@ -16,8 +16,8 @@
             <partial name="../Shared/PartialViews/_State.cshtml" />
 
             <div class="form-group">
-                <input type="submit" value="Crear Estado" class="btn btn-outline-primary" />
-                <a asp-action="Details" asp-route-id="@Model?.CountryId" class="btn btn-outline-success">Regresar</a>
+                <input type="submit" asp-route-stateId="@Model?.Id" value="Crear Estado" class="btn btn-outline-primary" />
+                <a asp-action="Details" asp-route-countryId="@Model?.CountryId" class="btn btn-outline-success">Regresar</a>
             </div>
         </form>
     </div>
