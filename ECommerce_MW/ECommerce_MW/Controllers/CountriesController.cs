@@ -29,6 +29,16 @@ namespace ECommerce_MW.Controllers
             return country;
         }
 
+        private async Task<State> GetStateById(Guid? stateId)
+        {
+            State state = await _context.States
+                .Include(s => s.Country)
+                .Include(c => c.Cities)
+                .FirstOrDefaultAsync(c => c.Id == stateId);
+
+            return state;
+        }
+
         #endregion
 
         #region Country Actions
@@ -323,10 +333,7 @@ namespace ECommerce_MW.Controllers
         {
             if (stateId == null || _context.States == null) return NotFound();
 
-            State state = await _context.States
-                .Include(s => s.Country)
-                .Include(c => c.Cities)
-                .FirstOrDefaultAsync(m => m.Id == stateId);
+            State state = await GetStateById(stateId);
 
             if (state == null) return NotFound();
 
@@ -337,10 +344,7 @@ namespace ECommerce_MW.Controllers
         {
             if (stateId == null || _context.States == null) return NotFound();
 
-            State state = await _context.States
-                .Include(s => s.Country)
-                .Include(c => c.Cities)
-                .FirstOrDefaultAsync(c => c.Id == stateId);
+            State state = await GetStateById(stateId);
 
             if (state == null) return NotFound();
 
@@ -353,10 +357,7 @@ namespace ECommerce_MW.Controllers
         {
             if (_context.States == null) return Problem("Entity set 'DatabaseContext.States' is null.");
 
-            State state = await _context.States
-                .Include(s => s.Country)
-                .Include(c => c.Cities)
-                .FirstOrDefaultAsync(c => c.Id == stateId);
+            State state = await GetStateById(stateId);
 
             if (state != null) _context.States.Remove(state);
 
