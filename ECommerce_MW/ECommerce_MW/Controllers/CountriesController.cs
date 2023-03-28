@@ -306,7 +306,7 @@ namespace ECommerce_MW.Controllers
                         Id = stateViewModel.Id,
                         Name = stateViewModel.Name,
                         CreatedDate = stateViewModel.CreatedDate,
-                        ModifiedDate = DateTime.UtcNow,
+                        ModifiedDate = DateTime.Now,
                     };
 
                     _context.Update(state);
@@ -459,7 +459,7 @@ namespace ECommerce_MW.Controllers
                         Id = cityViewModel.Id,
                         Name = cityViewModel.Name,
                         CreatedDate = cityViewModel.CreatedDate,
-                        ModifiedDate = DateTime.UtcNow,
+                        ModifiedDate = DateTime.Now,
                     };
 
                     _context.Update(city);
@@ -481,15 +481,15 @@ namespace ECommerce_MW.Controllers
             return View(cityViewModel);
         }
 
-        public async Task<IActionResult> DetailsCity(Guid? stateId)
+        public async Task<IActionResult> DetailsCity(Guid? cityId)
         {
-            if (stateId == null || _context.States == null) return NotFound();
+            if (cityId == null || _context.Cities == null) return NotFound();
 
-            State state = await GetStateById(stateId);
+            City city = await GetCityById(cityId);
 
-            if (state == null) return NotFound();
+            if (city == null) return NotFound();
 
-            return View(state);
+            return View(city);
         }
 
         public async Task<IActionResult> DeleteCity(Guid? stateId)

@@ -1,0 +1,24 @@
+﻿@model ECommerce_MW.DAL.Entities.City
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Detalles</h1>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css" />
+
+<div>
+    <partial name="../Shared/PartialViews/_CityDetailsDelete.cshtml" />
+</div>
+<div>
+    <a asp-action="EditCity" asp-route-cityId="@Model?.Id" class="btn btn-outline-warning">Editar Ciudad</a>
+    <a asp-action="DeleteCity" asp-route-cityId="@Model?.Id" class="btn btn-outline-danger">Eliminar Ciudad</a>
+    <a asp-action="DetailsState" asp-route-stateId="@Model?.State.Id" class="btn btn-outline-success">Regresar</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
