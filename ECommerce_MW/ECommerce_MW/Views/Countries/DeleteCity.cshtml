@@ -1,0 +1,18 @@
+﻿@model ECommerce_MW.DAL.Entities.City
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Eliminar</h1>
+
+<h3>¿Estás seguro que deseas eliminar la ciudad?</h3>
+<div>
+    <partial name="../Shared/PartialViews/_CityDetailsDelete.cshtml" />
+
+    <form asp-action="DeleteCity">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" asp-route-cityId="@Model.Id" value="Eliminar" class="btn btn-outline-danger" />
+        <a asp-action="DetailsState" asp-route-stateId="@Model?.State.Id" class="btn btn-outline-success">Regresar</a>
+    </form>
+</div>

@@ -492,32 +492,30 @@ namespace ECommerce_MW.Controllers
             return View(city);
         }
 
-        public async Task<IActionResult> DeleteCity(Guid? stateId)
+        public async Task<IActionResult> DeleteCity(Guid? cityId)
         {
-            if (stateId == null || _context.States == null) return NotFound();
+            if (cityId == null || _context.Cities == null) return NotFound();
 
-            State state = await GetStateById(stateId);
+            City city = await GetCityById(cityId);
 
-            if (state == null) return NotFound();
+            if (city == null) return NotFound();
 
-            return View(state);
+            return View(city);
         }
 
         [HttpPost, ActionName("DeleteCity")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteCityConfirmed(Guid stateId)
+        public async Task<IActionResult> DeleteCityConfirmed(Guid cityId)
         {
-            if (_context.States == null) return Problem("Entity set 'DatabaseContext.States' is null.");
+            if (_context.Cities == null) return Problem("Entity set 'DatabaseContext.Cities' is null.");
 
-            State state = await GetStateById(stateId);
+            City city = await GetCityById(cityId);
 
-            if (state != null) _context.States.Remove(state);
+            if (city != null) _context.Cities.Remove(city);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Details), new { countryId = state.Country.Id });
+            return RedirectToAction(nameof(DetailsState), new { stateId = city.State.Id });
         }
-
-
 
         #endregion
     }
