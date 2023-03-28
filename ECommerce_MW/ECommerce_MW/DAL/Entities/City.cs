@@ -9,6 +9,7 @@ namespace ECommerce_MW.DAL.Entities
         [Required(ErrorMessage = "El campo {0} es oblilgatorio.")]
         public string Name { get; set; }
 
+        [Display(Name = "Estado")]
         public State State { get; set; }
     }
 }

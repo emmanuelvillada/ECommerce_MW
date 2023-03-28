@@ -24,6 +24,7 @@ namespace ECommerce_MW.Controllers
         {
             return await _context.Countries
                 .Include(c => c.States)
+                .ThenInclude(s => s.Cities)
                 .FirstOrDefaultAsync(c => c.Id == countryId);
         }
 
@@ -144,18 +145,14 @@ namespace ECommerce_MW.Controllers
 
         public async Task<IActionResult> Details(Guid? countryId)
         {
-            if (countryId == null || _context.Countries == null)
-            {
-                return NotFound();
-            }
+            if (countryId == null || _context.Countries == null) return NotFound();
 
             var country = await _context.Countries
                 .Include(c => c.States)
+                .ThenInclude(s => s.Cities)
                 .FirstOrDefaultAsync(m => m.Id == countryId);
-            if (country == null)
-            {
-                return NotFound();
-            }
+
+            if (country == null) return NotFound();
 
             return View(country);
         }
@@ -188,6 +185,7 @@ namespace ECommerce_MW.Controllers
             }
             var country = await _context.Countries
                 .Include(c => c.States)
+                .ThenInclude(s => s.Cities)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (country != null)
