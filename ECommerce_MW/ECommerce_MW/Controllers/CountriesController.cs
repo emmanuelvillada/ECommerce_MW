@@ -22,21 +22,24 @@ namespace ECommerce_MW.Controllers
         #region Private Methods
         private async Task<Country> GetCountryById(Guid? countryId)
         {
-            Country country = await _context.Countries
+            return await _context.Countries
                 .Include(c => c.States)
                 .FirstOrDefaultAsync(c => c.Id == countryId);
-
-            return country;
         }
 
         private async Task<State> GetStateById(Guid? stateId)
         {
-            State state = await _context.States
+            return await _context.States
                 .Include(s => s.Country)
                 .Include(c => c.Cities)
                 .FirstOrDefaultAsync(c => c.Id == stateId);
+        }
 
-            return state;
+        private async Task<City> GetCityById(Guid? cityId)
+        {
+            return await _context.Cities
+                .Include(s => s.State)
+                .FirstOrDefaultAsync(c => c.Id == cityId);
         }
 
         #endregion
@@ -422,75 +425,60 @@ namespace ECommerce_MW.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditCity(Guid? stateId)
+        public async Task<IActionResult> EditCity(Guid? cityId)
         {
-            if (stateId == null || _context.States == null)
-            {
-                return NotFound();
-            }
+            if (cityId == null || _context.Cities == null) return NotFound();
 
-            State state = await _context.States
-                .Include(s => s.Country)
-                .FirstOrDefaultAsync(s => s.Id == stateId);
+            City city = await GetCityById(cityId);
 
-            if (state == null)
-            {
-                return NotFound();
-            }
+            if (city == null) return NotFound();
 
-            StateViewModel stateViewModel = new()
+            CityViewModel cityViewModel = new()
             {
-                CountryId = state.Country.Id,
-                Id = state.Id,
-                Name = state.Name,
-                CreatedDate = state.CreatedDate,
+                StateId = city.State.Id,
+                Id = city.Id,
+                Name = city.Name,
+                CreatedDate = city.CreatedDate,
             };
 
-            return View(stateViewModel);
+            return View(cityViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCity(Guid countryId, StateViewModel stateViewModel)
+        public async Task<IActionResult> EditCity(Guid stateId, CityViewModel cityViewModel)
         {
-            if (countryId != stateViewModel.CountryId)
-            {
-                return NotFound();
-            }
+            if (stateId != cityViewModel.StateId) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    State state = new()
+                    City city = new()
                     {
-                        Id = stateViewModel.Id,
-                        Name = stateViewModel.Name,
-                        CreatedDate = stateViewModel.CreatedDate,
+                        Id = cityViewModel.Id,
+                        Name = cityViewModel.Name,
+                        CreatedDate = cityViewModel.CreatedDate,
                         ModifiedDate = DateTime.UtcNow,
                     };
 
-                    _context.Update(state);
+                    _context.Update(city);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Details), new { stateViewModel.CountryId });
+                    return RedirectToAction(nameof(DetailsState), new { stateId = cityViewModel.StateId });
                 }
                 catch (DbUpdateException dbUpdateException)
                 {
                     if (dbUpdateException.InnerException.Message.Contains("duplicate"))
-                    {
-                        ModelState.AddModelError(string.Empty, "Ya existe un estado con el mismo nombre.");
-                    }
+                        ModelState.AddModelError(string.Empty, "Ya existe un ciudad con el mismo nombre.");
                     else
-                    {
                         ModelState.AddModelError(string.Empty, dbUpdateException.InnerException.Message);
-                    }
                 }
                 catch (Exception exception)
                 {
                     ModelState.AddModelError(string.Empty, exception.Message);
                 }
             }
-            return View(stateViewModel);
+            return View(cityViewModel);
         }
 
         public async Task<IActionResult> DetailsCity(Guid? stateId)
