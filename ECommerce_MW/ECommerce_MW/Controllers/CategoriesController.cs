@@ -31,9 +31,10 @@ namespace ECommerce_MW.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
                 try
                 {
+                    category.CreatedDate = DateTime.Now;
+                    _context.Add(category);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -80,6 +81,7 @@ namespace ECommerce_MW.Controllers
             {
                 try
                 {
+                    category.ModifiedDate = DateTime.Now;
                     _context.Update(category);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
