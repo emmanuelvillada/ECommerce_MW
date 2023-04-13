@@ -17,15 +17,14 @@ namespace ECommerce_MW.DAL
 
         public async Task SeederAsync()
         {
-            var email = "docente_carlos@yopmail.com";
-
             await _context.Database.EnsureCreatedAsync(); // me reemplaza el comando update-database
             await PopulateCategoriesAsync();
             await PopulateCountriesAsync();
             await PopulateRolesAsync();
-            await PopulateUserAsync(email);
+			await PopulateUserAsync("Admin", "Role", "admin_role@yopmail.com", "3002323232", "Street Fighter 1", "102030", UserType.Admin);
+			await PopulateUserAsync("User", "Role", "user_role@yopmail.com", "40056566756", "Street Fighter 2", "405060", UserType.User);
 
-            await _context.SaveChangesAsync();
+			await _context.SaveChangesAsync();
         }
 
         private async Task PopulateCategoriesAsync()
@@ -122,7 +121,14 @@ namespace ECommerce_MW.DAL
             await _userHelper.CheckRoleAsync(UserType.User.ToString());
         }
 
-        private async Task PopulateUserAsync(string email)
+        private async Task PopulateUserAsync(
+            string firstName,
+            string lastName,
+            string email,
+            string phone,
+            string address,
+            string document,
+            UserType userType)
         {
             User user = await _userHelper.GetUserAsync(email);
 
@@ -131,20 +137,19 @@ namespace ECommerce_MW.DAL
                 user = new User
                 {
                     CreatedDate = DateTime.Now,
-                    FirstName = "Docente Carlos",
-                    LastName = "Diaz",
+                    FirstName = firstName,
+                    LastName = lastName,
                     Email = email,
                     UserName = email,
-                    PhoneNumber = "3002002002",
-                    Address = "Street Fighter",
-                    Document = "102030",
+                    PhoneNumber = phone,
+                    Address = address,
+                    Document = document,
                     City = _context.Cities.FirstOrDefault(),
-                    UserType = UserType.Admin,
+                    UserType = userType,
                 };
 
                 await _userHelper.AddUserAsync(user, "123456");
-                //await _userHelper.AddUserToRoleAsync(user, user.UserType.ToString());
-                await _userHelper.AddUserToRoleAsync(user, UserType.Admin.ToString());
+                await _userHelper.AddUserToRoleAsync(user, userType.ToString());
             }
         }
     }
