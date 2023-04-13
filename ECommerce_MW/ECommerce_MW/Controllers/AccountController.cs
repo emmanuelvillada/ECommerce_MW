@@ -46,5 +46,10 @@ namespace ECommerce_MW.Controllers
 			await _userHelper.LogoutAsync();
 			return RedirectToAction("Index", "Home");
 		}
-	}
+
+		public IActionResult Unauthorized()
+		{
+			return View();
+		}
+    }
 }

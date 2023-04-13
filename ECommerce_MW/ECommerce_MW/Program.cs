@@ -27,6 +27,12 @@ builder.Services.AddIdentity<User, IdentityRole>(io =>
 
 }).AddEntityFrameworkStores<DatabaseContext>();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+	options.LoginPath = "/Account/Unauthorized";
+	options.AccessDeniedPath = "/Account/Unauthorized";
+});
+
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
@@ -57,6 +63,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseStatusCodePagesWithReExecute("/error/{0}");
 
 app.UseRouting();
 
