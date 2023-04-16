@@ -1,6 +1,5 @@
 ﻿using ECommerce_MW.Helpers;
 using ECommerce_MW.Models;
-using ECommerce_MW.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ECommerce_MW.Controllers
@@ -9,10 +8,10 @@ namespace ECommerce_MW.Controllers
 	{
 		private readonly IUserHelper _userHelper;
 
-        public AccountController(IUserHelper userHelper)
-        {
-            _userHelper = userHelper;
-        }
+		public AccountController(IUserHelper userHelper)
+		{
+			_userHelper = userHelper;
+		}
 
 		[HttpGet]
 		public IActionResult Login()
@@ -51,5 +50,5 @@ namespace ECommerce_MW.Controllers
 		{
 			return View();
 		}
-    }
+	}
 }
