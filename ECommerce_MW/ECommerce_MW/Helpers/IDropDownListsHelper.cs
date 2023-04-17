@@ -11,6 +11,5 @@ namespace ECommerce_MW.Helpers
         Task<IEnumerable<SelectListItem>> GetDDLStatesAsync(Guid countryId);
 
         Task<IEnumerable<SelectListItem>> GetDDLCitiesAsync(Guid stateId);
-
     }
 }

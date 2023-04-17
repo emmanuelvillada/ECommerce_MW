@@ -1,17 +1,11 @@
-﻿using ECommerce_MW.Enums;
-using Microsoft.AspNetCore.Identity;
+﻿using ECommerce_MW.DAL.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace ECommerce_MW.DAL.Entities
+namespace ECommerce_MW.Models
 {
-    public class User : IdentityUser
+    public class EditUserViewModel : Entity
     {
-        [Display(Name = "Fecha de creación")]
-        public DateTime? CreatedDate { get; set; }
-
-        [Display(Name = "Fecha de modificación")]
-        public DateTime? ModifiedDate { get; set; }
-
         [Display(Name = "Documento")]
         [MaxLength(20, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
@@ -26,14 +20,16 @@ namespace ECommerce_MW.DAL.Entities
         [MaxLength(50, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string LastName { get; set; }
-        
-        [Display(Name = "Ciudad")]
-        public City City { get; set; }
 
         [Display(Name = "Dirección")]
         [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Address { get; set; }
+
+        [Display(Name = "Teléfono")]
+        [MaxLength(20, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public string PhoneNumber { get; set; }
 
         [Display(Name = "Foto")]
         public Guid ImageId { get; set; }
@@ -44,15 +40,29 @@ namespace ECommerce_MW.DAL.Entities
             ? $"https://localhost:7048/images/noimage.png"
             : $"https://sales2023.blob.core.windows.net/users/{ImageId}";
 
-        [Display(Name = "Tipo de usuario")]
-        public UserType UserType { get; set; }
+        [Display(Name = "Image")]
+        public IFormFile ImageFile { get; set; }
 
-        //Propiedades de Lectura
-        [Display(Name = "Usuario")]
-        public string FullName => $"{FirstName} {LastName}";
+        #region Country
+        [Display(Name = "País")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar un país.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public int CountryId { get; set; }
+        #endregion
 
-        [Display(Name = "Usuario")]
-        public string FullNameWithDocument => $"{FirstName} {LastName} - {Document}";
+        public IEnumerable<SelectListItem> Countries { get; set; }
 
+        [Display(Name = "Departmento/Estado")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar un departamento/estado.")]
+        [Required(ErrorMessage = "El campo {0} es obligatorio.")]
+        public int StateId { get; set; }
+
+        public IEnumerable<SelectListItem> States { get; set; }
+
+        [Display(Name = "Ciuadad")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar una ciudad.")]
+        public int CityId { get; set; }
+
+        public IEnumerable<SelectListItem> Cities { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using ECommerce_MW.Helpers;
 using ECommerce_MW.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddDbContext<DatabaseContext>(o =>
 {
     o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddScoped<IAzureBlobHelper, AzureBlobHelper>();
 
 builder.Services.AddIdentity<User, IdentityRole>(io =>
 {
