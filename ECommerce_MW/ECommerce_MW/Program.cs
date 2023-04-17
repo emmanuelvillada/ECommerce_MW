@@ -38,6 +38,7 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 builder.Services.AddTransient<SeederDb>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
+builder.Services.AddScoped<IDropDownListsHelper, DropDownListsHelper>();
 
 var app = builder.Build();
 
