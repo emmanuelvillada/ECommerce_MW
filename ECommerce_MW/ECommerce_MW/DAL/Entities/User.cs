@@ -38,11 +38,10 @@ namespace ECommerce_MW.DAL.Entities
         [Display(Name = "Foto")]
         public Guid ImageId { get; set; }
 
-        //TODO: Pending to put the correct paths
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
             ? $"https://localhost:7057/images/noimage.png"
-            : $"https://publicBlobStorage.blob.core.windows.net/users/{ImageId}";
+            : $"https://sales2023.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Tipo de usuario")]
         public UserType UserType { get; set; }

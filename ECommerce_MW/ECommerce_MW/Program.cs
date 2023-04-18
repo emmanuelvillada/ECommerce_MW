@@ -4,6 +4,7 @@ using ECommerce_MW.Helpers;
 using ECommerce_MW.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,7 @@ builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddTransient<SeederDb>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IDropDownListsHelper, DropDownListsHelper>();
+builder.Services.AddScoped<IAzureBlobHelper, AzureBlobHelper>();
 
 var app = builder.Build();
 
