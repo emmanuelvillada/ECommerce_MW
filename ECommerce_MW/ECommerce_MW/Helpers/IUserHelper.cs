@@ -10,6 +10,8 @@ namespace ECommerce_MW.Helpers
 
         Task<IdentityResult> AddUserAsync(User user, string password);
 
+        Task<User> AddUserAsync(AddUserViewModel addUserViewModel);
+
         Task CheckRoleAsync(string roleName);
 
         Task AddUserToRoleAsync(User user, string roleName);

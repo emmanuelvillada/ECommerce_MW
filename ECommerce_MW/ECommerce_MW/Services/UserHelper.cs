@@ -3,6 +3,7 @@ using ECommerce_MW.DAL.Entities;
 using ECommerce_MW.Helpers;
 using ECommerce_MW.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce_MW.Services
@@ -28,6 +29,31 @@ namespace ECommerce_MW.Services
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
             return await _userManager.CreateAsync(user, password);
+        }
+
+        public async Task<User> AddUserAsync(AddUserViewModel addUserViewModel)
+        {
+            User user = new()
+            {
+                Address = addUserViewModel.Address,
+                Document = addUserViewModel.Document,
+                Email = addUserViewModel.Username,
+                FirstName = addUserViewModel.FirstName,
+                LastName = addUserViewModel.LastName,
+                ImageId = addUserViewModel.ImageId,
+                PhoneNumber = addUserViewModel.PhoneNumber,
+                City = await _context.Cities.FindAsync(addUserViewModel.CityId),
+                UserName = addUserViewModel.Username,
+                UserType = addUserViewModel.UserType
+            };
+
+            IdentityResult result = await _userManager.CreateAsync(user, addUserViewModel.Password);
+
+            if (result != IdentityResult.Success) return null;
+
+            User newUser = await GetUserAsync(addUserViewModel.Username);
+            await AddUserToRoleAsync(newUser, user.UserType.ToString());
+            return newUser;
         }
 
         public async Task AddUserToRoleAsync(User user, string roleName)
