@@ -57,7 +57,7 @@ namespace ECommerce_MW.Models
 
         public IEnumerable<SelectListItem> States { get; set; }
 
-        [Display(Name = "Ciuadad")]
+        [Display(Name = "Ciudad")]
         //2[Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar una ciudad.")]
         public Guid CityId { get; set; }
 

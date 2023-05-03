@@ -96,7 +96,7 @@ namespace ECommerce_MW.Controllers
                 if (user == null)
                 {
                     ModelState.AddModelError(string.Empty, "Este correo ya está siendo usado.");
-                    FillDropDownListLocation(addUserViewModel);
+                    await FillDropDownListLocation(addUserViewModel);
                     return View(addUserViewModel);
                 }
 
@@ -113,16 +113,15 @@ namespace ECommerce_MW.Controllers
                 if (login.Succeeded) return RedirectToAction("Index", "Home");
             }
 
-            FillDropDownListLocation(addUserViewModel);
+            await FillDropDownListLocation(addUserViewModel);
             return View(addUserViewModel);
         }
 
         private async Task FillDropDownListLocation(AddUserViewModel addUserViewModel)
         {
-            Guid emptyGuid = new Guid();
             addUserViewModel.Countries = await _ddlHelper.GetDDLCountriesAsync();
-            addUserViewModel.States = await _ddlHelper.GetDDLStatesAsync(emptyGuid);
-            addUserViewModel.Cities = await _ddlHelper.GetDDLCitiesAsync(emptyGuid);
+            addUserViewModel.States = await _ddlHelper.GetDDLStatesAsync(addUserViewModel.CountryId);
+            addUserViewModel.Cities = await _ddlHelper.GetDDLCitiesAsync(addUserViewModel.StateId);
         }
 
         [HttpGet]
