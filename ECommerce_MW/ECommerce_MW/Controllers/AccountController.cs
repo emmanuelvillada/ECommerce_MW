@@ -12,65 +12,66 @@ namespace ECommerce_MW.Controllers
 	{
 		private readonly IUserHelper _userHelper;
 		private readonly DatabaseContext _context;
-		private readonly IDropDownListsHelper _dropDownListsHelper;
+		private readonly IDropDownListsHelper _ddlHelper;
 		private readonly IAzureBlobHelper _azureBlobHelper;
 
 		public AccountController(IUserHelper userHelper, DatabaseContext context, IDropDownListsHelper dropDownListsHelper, IAzureBlobHelper azureBlobHelper)
 		{
 			_userHelper = userHelper;
 			_context = context;
-			_dropDownListsHelper = dropDownListsHelper;
+            _ddlHelper = dropDownListsHelper;
 			_azureBlobHelper = azureBlobHelper;
 		}
 
-		[HttpGet]
-		public IActionResult Login()
-		{
-			if (User.Identity.IsAuthenticated)
-			{
-				return RedirectToAction("Index", "Home");
-			}
+        [HttpGet]
+        public IActionResult Login()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
-			return View(new LoginViewModel());
-		}
+            return View(new LoginViewModel());
+        }
 
-		[HttpPost]
-		public async Task<IActionResult> Login(LoginViewModel loginViewModel)
-		{
-			if (ModelState.IsValid)
-			{
-				Microsoft.AspNetCore.Identity.SignInResult result = await _userHelper.LoginAsync(loginViewModel);
-				if (result.Succeeded)
-				{
-					return RedirectToAction("Index", "Home");
-				}
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                Microsoft.AspNetCore.Identity.SignInResult result = await _userHelper.LoginAsync(loginViewModel);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
 
-				ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
-			}
-			return View(loginViewModel);
-		}
+                ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
+            }
+            return View(loginViewModel);
+        }
 
-		public async Task<IActionResult> Logout()
-		{
-			await _userHelper.LogoutAsync();
-			return RedirectToAction("Index", "Home");
-		}
+        public async Task<IActionResult> Logout()
+        {
+            await _userHelper.LogoutAsync();
+            return RedirectToAction("Index", "Home");
+        }
 
-		public IActionResult Unauthorized()
-		{
-			return View();
-		}
+        public IActionResult Unauthorized()
+        {
+            return View();
+        }
 
         [HttpGet]
         public async Task<IActionResult> Register()
         {
-            Guid emptyGuid = new Guid();
+            Guid emptyGuid = new Guid(); //New Guid for example: 1515fsaf-1215gas-1ga15-a41ga
+
             AddUserViewModel addUserViewModel = new()
             {
                 Id = Guid.Empty,
-                Countries = await _dropDownListsHelper.GetDDLCountriesAsync(),
-                States = await _dropDownListsHelper.GetDDLStatesAsync(emptyGuid),
-                Cities = await _dropDownListsHelper.GetDDLCitiesAsync(emptyGuid),
+                Countries = await _ddlHelper.GetDDLCountriesAsync(),
+                States = await _ddlHelper.GetDDLStatesAsync(emptyGuid),
+                Cities = await _ddlHelper.GetDDLCitiesAsync(emptyGuid),
                 UserType = UserType.User,
             };
 
@@ -89,11 +90,13 @@ namespace ECommerce_MW.Controllers
                     imageId = await _azureBlobHelper.UploadAzureBlobAsync(addUserViewModel.ImageFile, "users");
 
                 addUserViewModel.ImageId = imageId;
-                User user = await _userHelper.AddUserAsync(addUserViewModel);
+                addUserViewModel.CreatedDate = DateTime.Now;
 
+                User user = await _userHelper.AddUserAsync(addUserViewModel);
                 if (user == null)
                 {
                     ModelState.AddModelError(string.Empty, "Este correo ya está siendo usado.");
+                    FillDropDownListLocation(addUserViewModel);
                     return View(addUserViewModel);
                 }
 
@@ -110,9 +113,19 @@ namespace ECommerce_MW.Controllers
                 if (login.Succeeded) return RedirectToAction("Index", "Home");
             }
 
+            FillDropDownListLocation(addUserViewModel);
             return View(addUserViewModel);
         }
 
+        private async Task FillDropDownListLocation(AddUserViewModel addUserViewModel)
+        {
+            Guid emptyGuid = new Guid();
+            addUserViewModel.Countries = await _ddlHelper.GetDDLCountriesAsync();
+            addUserViewModel.States = await _ddlHelper.GetDDLStatesAsync(emptyGuid);
+            addUserViewModel.Cities = await _ddlHelper.GetDDLCitiesAsync(emptyGuid);
+        }
+
+        [HttpGet]
         public JsonResult GetStates(Guid countryId)
         {
             Country country = _context.Countries
@@ -121,20 +134,20 @@ namespace ECommerce_MW.Controllers
 
             if (country == null) return null;
 
-            var list = country.States.OrderBy(d => d.Name);
-            return Json(list);
+            var jsonn = country.States.OrderBy(d => d.Name);
+
+            return Json(jsonn);
         }
 
+        [HttpGet]
         public JsonResult GetCities(Guid stateId)
         {
             State state = _context.States
                 .Include(s => s.Cities)
                 .FirstOrDefault(s => s.Id == stateId);
-            
             if (state == null) return null;
 
             return Json(state.Cities.OrderBy(c => c.Name));
         }
-
     }
 }
