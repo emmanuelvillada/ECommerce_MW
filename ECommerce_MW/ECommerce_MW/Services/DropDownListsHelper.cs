@@ -28,7 +28,8 @@ namespace ECommerce_MW.Services
             listCategories.Insert(0, new SelectListItem
             {
                 Text = "Selecione una categoría...",
-                Value = "0",
+                Value = Guid.Empty.ToString(), //Cambio el 0 por Guid.Empty ya que debo manejar el mismo tipo de dato en todo el DDL
+                Selected = true //Le coloco esta propiedad para que me salga seleccionada por defecto desde la UI
             });
 
             return listCategories;
@@ -48,7 +49,8 @@ namespace ECommerce_MW.Services
             listCountries.Insert(0, new SelectListItem
             {
                 Text = "Selecione un país...",
-                Value = "0",
+                Value = Guid.Empty.ToString(),
+                Selected = true
             });
 
             return listCountries;
@@ -69,7 +71,8 @@ namespace ECommerce_MW.Services
             listStatesByCountryId.Insert(0, new SelectListItem
             {
                 Text = "Selecione un estado...",
-                Value = "0",
+                Value = Guid.Empty.ToString(),
+                Selected = true
             });
 
             return listStatesByCountryId;
@@ -90,7 +93,8 @@ namespace ECommerce_MW.Services
             listCitiesByStateId.Insert(0, new SelectListItem
             {
                 Text = "Selecione una ciudad...",
-                Value = "0",
+                Value = Guid.Empty.ToString(),
+                Selected = true //Le coloco esta propiedad para que me salga seleccionada por defecto desde la UI
             });
 
             return listCitiesByStateId;
