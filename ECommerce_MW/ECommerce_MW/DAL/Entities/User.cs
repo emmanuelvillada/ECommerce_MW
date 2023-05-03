@@ -31,7 +31,7 @@ namespace ECommerce_MW.DAL.Entities
         public City City { get; set; }
 
         [Display(Name = "Dirección")]
-        [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caractéres.")]
+        [MaxLength(200, ErrorMessage = "El campo {0} debe tener máximo {1} caracteres.")]
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public string Address { get; set; }
 
@@ -40,7 +40,7 @@ namespace ECommerce_MW.DAL.Entities
 
         [Display(Name = "Foto")]
         public string ImageFullPath => ImageId == Guid.Empty
-            ? $"https://localhost:7057/images/noimage.png"
+            ? $"https://localhost:7048/images/NoImage.png"
             : $"https://sales2023.blob.core.windows.net/users/{ImageId}";
 
         [Display(Name = "Tipo de usuario")]

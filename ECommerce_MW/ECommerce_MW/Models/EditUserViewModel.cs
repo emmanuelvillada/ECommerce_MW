@@ -50,7 +50,7 @@ namespace ECommerce_MW.Models
 
         public IEnumerable<SelectListItem> Countries { get; set; }
 
-        [Display(Name = "Departmento/Estado")]
+        [Display(Name = "Departamento/Estado")]
         //[Range(1, int.MaxValue, ErrorMessage = "Debes de seleccionar un departamento/estado.")] //New datannotation
         [Required(ErrorMessage = "El campo {0} es obligatorio.")]
         public Guid StateId { get; set; }
