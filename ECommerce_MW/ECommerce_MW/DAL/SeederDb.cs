@@ -34,6 +34,7 @@ namespace ECommerce_MW.DAL
                 _context.Categories.Add(new Category { Name = "Tecnología", Description = "Elementos tech" , CreatedDate = DateTime.Now });
                 _context.Categories.Add(new Category { Name = "Implementos de Aseo", Description = "Detergente, jabón, etc.", CreatedDate = DateTime.Now });
                 _context.Categories.Add(new Category { Name = "Ropa interior", Description = "Tanguitas, narizonas", CreatedDate = DateTime.Now });
+                _context.Categories.Add(new Category { Name = "Calzado", Description = "Calcetines, zapatos, etc.", CreatedDate = DateTime.Now });
                 _context.Categories.Add(new Category { Name = "Gamers", Description = "PS5, XBOX SERIES", CreatedDate = DateTime.Now });
                 _context.Categories.Add(new Category { Name = "Mascotas", Description = "Concentrado, jabón para pulgas.", CreatedDate = DateTime.Now });
             }
