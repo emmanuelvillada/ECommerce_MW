@@ -171,5 +171,52 @@ namespace ECommerce_MW.Controllers
             return View(product);
         }
 
+        public async Task<IActionResult> AddImage(Guid? productId)
+        {
+            if (productId == null) return NotFound();
+
+            Product product = await _context.Products.FindAsync(productId);
+            if (product == null) return NotFound();
+
+            AddProductImageViewModel addProductImageViewModel = new()
+            {
+                ProductId = product.Id,
+            };
+
+            return View(addProductImageViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddImage(AddProductImageViewModel addProductImageViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    Guid imageId = await _azureBlobHelper.UploadAzureBlobAsync(addProductImageViewModel.ImageFile, "products");
+
+                    Product product = await _context.Products.FindAsync(addProductImageViewModel.ProductId);
+                
+                    ProductImage productImage = new()
+                    {
+                        Product = product,
+                        ImageId = imageId,
+                    };
+
+                    _context.Add(productImage);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Details), new { productId = product.Id });
+                }
+                catch (Exception exception)
+                {
+                    ModelState.AddModelError(string.Empty, exception.Message);
+                }
+            }
+
+            return View(addProductImageViewModel);
+        }
+
+
     }
 }
