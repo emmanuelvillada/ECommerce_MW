@@ -156,5 +156,20 @@ namespace ECommerce_MW.Controllers
 
             return View(editProductViewModel);
         }
+
+        public async Task<IActionResult> Details(Guid? productId)
+        {
+            if (productId == null) return NotFound();
+
+            Product product = await _context.Products
+                .Include(p => p.ProductImages)
+                .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+                .FirstOrDefaultAsync(p => p.Id == productId);
+            if (product == null) return NotFound();
+
+            return View(product);
+        }
+
     }
 }
