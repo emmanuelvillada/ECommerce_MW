@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using ECommerce_MW.DAL.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ECommerce_MW.Helpers
 {
     public interface IDropDownListsHelper
     {
         Task<IEnumerable<SelectListItem>> GetDDLCategoriesAsync();
+        Task<IEnumerable<SelectListItem>> GetDDLCategoriesAsync(IEnumerable<Category> filterCategories);
 
         Task<IEnumerable<SelectListItem>> GetDDLCountriesAsync();
 

@@ -237,13 +237,23 @@ namespace ECommerce_MW.Controllers
         {
             if (productId == null) return NotFound();
 
-            Product product = await _context.Products.FindAsync(productId);
+            Product product = await _context.Products
+                .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+                .FirstOrDefaultAsync(p => p.Id == productId);
+
             if (product == null) return NotFound();
+
+            List<Category> categories = product.ProductCategories.Select(pc => new Category
+            {
+                Id = pc.Category.Id,
+                Name = pc.Category.Name,
+            }).ToList();
 
             AddProductCategoryViewModel addCategoryProductViewModel = new()
             {
                 ProductId = product.Id,
-                Categories = await _dropDownListsHelper.GetDDLCategoriesAsync(),
+                Categories = await _dropDownListsHelper.GetDDLCategoriesAsync(categories),
             };
 
             return View(addCategoryProductViewModel);
@@ -253,20 +263,21 @@ namespace ECommerce_MW.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddCategory(AddProductCategoryViewModel addCategoryProductViewModel)
         {
+            //New change
+            Product product = await _context.Products
+                .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+                .FirstOrDefaultAsync(p => p.Id == addCategoryProductViewModel.ProductId);
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    Product product = await _context.Products.FindAsync(addCategoryProductViewModel.ProductId);
-                    Category category = await _context.Categories.FindAsync(addCategoryProductViewModel.CategoryId);
-                
-                    if (category == null || product == null) return NotFound();
-
                     ProductCategory productCategory = new()
-                    {
-                        Category = category,
-                        Product = product
-                    };
+                {
+                    Category = await _context.Categories.FindAsync(addCategoryProductViewModel.CategoryId),
+                    Product = product,
+                };
 
                     _context.Add(productCategory);
                     await _context.SaveChangesAsync();
@@ -279,9 +290,17 @@ namespace ECommerce_MW.Controllers
                 }
             }
 
-            addCategoryProductViewModel.Categories = await _dropDownListsHelper.GetDDLCategoriesAsync();
+            //New change
+            List<Category> categories = product.ProductCategories.Select(pc => new Category
+            {
+                Id = pc.Category.Id,
+                Name = pc.Category.Name,
+            }).ToList();
+
+            addCategoryProductViewModel.Categories = await _dropDownListsHelper.GetDDLCategoriesAsync(categories);
             return View(addCategoryProductViewModel);
         }
+
 
         public async Task<IActionResult> DeleteCategory(Guid? categoryId)
         {
