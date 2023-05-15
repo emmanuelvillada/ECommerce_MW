@@ -3,7 +3,6 @@ using ECommerce_MW.DAL.Entities;
 using ECommerce_MW.Helpers;
 using ECommerce_MW.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace ECommerce_MW.Services
@@ -83,15 +82,15 @@ namespace ECommerce_MW.Services
             return await _userManager.IsInRoleAsync(user, roleName);
         }
 
-		public async Task<SignInResult> LoginAsync(LoginViewModel loginViewModel)
-		{
+        public async Task<SignInResult> LoginAsync(LoginViewModel loginViewModel)
+        {
             return await _signInManager.PasswordSignInAsync(loginViewModel.Username, loginViewModel.Password, loginViewModel.RememberMe, false);
-		}
+        }
 
-		public async Task LogoutAsync()
-		{
-			await _signInManager.SignOutAsync();
-		}
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
 
         public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
         {
