@@ -1,21 +1,40 @@
-﻿using ECommerce_MW.Models;
+﻿using ECommerce_MW.DAL;
+using ECommerce_MW.DAL.Entities;
+using ECommerce_MW.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace ECommerce_MW.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly DatabaseContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(DatabaseContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<Product>? products = await _context.Products
+                            .Include(p => p.ProductImages)
+                            .Include(p => p.ProductCategories)
+                            .OrderBy(p => p.Name)
+                            .ToListAsync();
+
+            ViewBag.UserFullName = GetUserFullName();
+
+            return View(products);
+        }
+
+        private string GetUserFullName()
+        {
+            return _context.Users
+                 .Where(u => u.Email == User.Identity.Name)
+                 .Select(u => u.FullName)
+                 .FirstOrDefault();
         }
 
         public IActionResult Privacy()
