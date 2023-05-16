@@ -1,7 +1,12 @@
-﻿@model IEnumerable<ECommerce_MW.DAL.Entities.Product>
+﻿@model ECommerce_MW.Models.HomeViewModel
 
 @{
     ViewData["Title"] = "Index";
+}
+
+@if (Model.Quantity > 0)
+{
+    <a asp-action="ShowCart" class="btn btn-outline-primary">Ver Carro de Compras (@Model.Quantity)</a>
 }
 
 @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
@@ -16,7 +21,7 @@ else
         <h3>Productos</h3>
     </div>
 
-    @foreach (var group in Model.Select((item, index) => new { Item = item, Index = index })
+    @foreach (var group in Model.Products.Select((item, index) => new { Item = item, Index = index })
                           .GroupBy(x => x.Index / 4))
     {
         <div class="row" style="text-align: center;">
@@ -38,7 +43,7 @@ else
                                 </div>
                                 <div class="card_foot">
                                     <button asp-action="Details" asp-route-productId="@item.Id" class="btn btn-secondary" disabled>Detalles</button>
-                                    <button asp-action="Add" asp-route-productId="@item.Id" class="btn btn-primary" disabled>Agregar</button>
+                                    <button asp-action="AddProductInKart" asp-route-productId="@item.Id" class="btn btn-primary" disabled>Agregar</button>
                                 </div>
                             </div>
                         </div>
@@ -57,7 +62,7 @@ else
                                 </div>
                                 <div class="card_foot">
                                     <a asp-action="Details" asp-route-productId="@item.Id" class="btn btn-secondary">Detalles</a>
-                                    <a asp-action="Add" asp-route-productId="@item.Id" class="btn btn-primary">Agregar</a>
+                                    <a asp-action="AddProductInKart" asp-route-productId="@item.Id" class="btn btn-primary">Agregar</a>
                                 </div>
                             </div>
                         </div>
