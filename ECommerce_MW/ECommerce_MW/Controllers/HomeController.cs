@@ -2,6 +2,7 @@
 using ECommerce_MW.DAL.Entities;
 using ECommerce_MW.Helpers;
 using ECommerce_MW.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -150,5 +151,27 @@ namespace ECommerce_MW.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        [Authorize] //Etiqueta para que solo usuarios logueados puedan acceder a este método.
+        public async Task<IActionResult> ShowCart()
+        {
+            User user = await _userHelper.GetUserAsync(User.Identity.Name);
+            if (user == null) return NotFound();
+
+            List<TemporalSale>? temporalSales = await _context.TemporalSales
+                .Include(ts => ts.Product)
+                .ThenInclude(p => p.ProductImages)
+                .Where(ts => ts.User.Id == user.Id)
+                .ToListAsync();
+
+            ShowCartViewModel showCartViewModel = new()
+            {
+                User = user,
+                TemporalSales = temporalSales,
+            };
+
+            return View(showCartViewModel);
+        }
+
     }
 }
