@@ -77,19 +77,31 @@ namespace ECommerce_MW.Controllers
             if (!User.Identity.IsAuthenticated) return RedirectToAction("Login", "Account");
 
             Product product = await _context.Products.FindAsync(productId);
-            if (product == null) return NotFound();
-
             User user = await _userHelper.GetUserAsync(User.Identity.Name);
-            if (user == null) return NotFound();
 
-            TemporalSale temporalSale = new()
+            if (user == null || product == null) return NotFound();
+
+            // Busca una entrada existente en la tabla TemporalSale para este producto y usuario
+            TemporalSale existingTemporalSale = await _context.TemporalSales
+                .Where(t => t.Product.Id == productId && t.User.Id == user.Id)
+                .FirstOrDefaultAsync();
+
+            if (existingTemporalSale != null)
+                // Si existe una entrada, incrementa la cantidad
+                existingTemporalSale.Quantity += 1;
+            else
             {
-                Product = product,
-                Quantity = 1,
-                User = user
-            };
+                // Si no existe una entrada, crea una nueva
+                TemporalSale temporalSale = new()
+                {
+                    Product = product,
+                    Quantity = 1,
+                    User = user
+                };
 
-            _context.TemporalSales.Add(temporalSale);
+                _context.TemporalSales.Add(temporalSale);
+            }
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -171,6 +183,49 @@ namespace ECommerce_MW.Controllers
             };
 
             return View(showCartViewModel);
+        }
+
+        public async Task<IActionResult> DecreaseQuantity(Guid? temporalSaleId)
+        {
+            if (temporalSaleId == null) return NotFound();
+
+            TemporalSale temporalSale = await _context.TemporalSales.FindAsync(temporalSaleId);
+            if (temporalSale == null) return NotFound();
+
+            if (temporalSale.Quantity > 1)
+            {
+                temporalSale.Quantity--;
+                _context.TemporalSales.Update(temporalSale);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(ShowCart));
+        }
+
+        public async Task<IActionResult> IncreaseQuantity(Guid? temporalSaleId)
+        {
+            if (temporalSaleId == null) return NotFound();
+
+            TemporalSale temporalSale = await _context.TemporalSales.FindAsync(temporalSaleId);
+            if (temporalSale == null) return NotFound();
+
+            temporalSale.Quantity++;
+            _context.TemporalSales.Update(temporalSale);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(ShowCart));
+        }
+
+        public async Task<IActionResult> DeleteTemporalSale(Guid? temporalSaleId)
+        {
+            if (temporalSaleId == null) return NotFound();
+
+            TemporalSale temporalSale = await _context.TemporalSales.FindAsync(temporalSaleId);
+            if (temporalSale == null) return NotFound();
+
+            _context.TemporalSales.Remove(temporalSale);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ShowCart));
         }
 
     }
