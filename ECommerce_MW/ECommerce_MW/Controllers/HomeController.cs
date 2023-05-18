@@ -1,7 +1,9 @@
-﻿using ECommerce_MW.DAL;
+﻿using ECommerce_MW.Common;
+using ECommerce_MW.DAL;
 using ECommerce_MW.DAL.Entities;
 using ECommerce_MW.Helpers;
 using ECommerce_MW.Models;
+using ECommerce_MW.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +15,13 @@ namespace ECommerce_MW.Controllers
     {
         private readonly DatabaseContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly IOrderHelper _orderHelper;
 
-        public HomeController(DatabaseContext context, IUserHelper userHelper)
+        public HomeController(DatabaseContext context, IUserHelper userHelper, IOrderHelper orderHelper)
         {
             _context = context;
             _userHelper = userHelper;
+            _orderHelper = orderHelper;
         }
 
         public async Task<IActionResult> Index()
@@ -273,5 +277,31 @@ namespace ECommerce_MW.Controllers
             return View(editTemporalSaleViewModel);
         }
 
+        [Authorize]
+        public IActionResult OrderSuccess()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmTemporalSale(ShowCartViewModel showCartViewModel)
+        {
+            User user = await _userHelper.GetUserAsync(User.Identity.Name);
+            if (user == null) return NotFound();
+
+            showCartViewModel.User = user;
+            showCartViewModel.TemporalSales = await _context.TemporalSales
+                .Include(ts => ts.Product)
+                .ThenInclude(p => p.ProductImages)
+                .Where(ts => ts.User.Id == user.Id)
+            .ToListAsync();
+
+            Response response = await _orderHelper.ProcessOrderAsync(showCartViewModel);
+            if (response.IsSuccess) return RedirectToAction(nameof(OrderSuccess));
+
+            ModelState.AddModelError(string.Empty, response.Message);
+            return View(showCartViewModel);
+        }
     }
 }

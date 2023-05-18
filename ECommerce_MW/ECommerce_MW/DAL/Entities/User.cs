@@ -6,6 +6,8 @@ namespace ECommerce_MW.DAL.Entities
 {
     public class User : IdentityUser
     {
+        public ICollection<Order> Orders { get; set; }
+
         [Display(Name = "Fecha de creación")]
         public DateTime? CreatedDate { get; set; }
 

@@ -57,6 +57,7 @@ builder.Services.AddTransient<SeederDb>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IDropDownListsHelper, DropDownListsHelper>();
 builder.Services.AddScoped<IAzureBlobHelper, AzureBlobHelper>();
+builder.Services.AddScoped<IOrderHelper, OrderHelper>();
 
 var app = builder.Build();
 
