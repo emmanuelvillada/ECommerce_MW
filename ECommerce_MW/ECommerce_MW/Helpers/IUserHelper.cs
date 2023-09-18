@@ -10,6 +10,8 @@ namespace ECommerce_MW.Helpers
 
         Task<IdentityResult> AddUserAsync(User user, string password);
 
+        Task<User> AddUserAsync(AddUserViewModel addUserViewModel);
+
         Task CheckRoleAsync(string roleName);
 
         Task AddUserToRoleAsync(User user, string roleName);
@@ -19,5 +21,12 @@ namespace ECommerce_MW.Helpers
         Task<SignInResult> LoginAsync(LoginViewModel loginViewModel);
 
         Task LogoutAsync();
+
+        Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword);
+
+        Task<IdentityResult> UpdateUserAsync(User user);
+
+        Task<User> GetUserAsync(Guid userId); //Sobrecargado
+
     }
 }

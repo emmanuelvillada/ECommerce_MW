@@ -3,13 +3,18 @@ using ECommerce_MW.DAL.Entities;
 using ECommerce_MW.Helpers;
 using ECommerce_MW.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
+using System.Globalization;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services
+    .AddControllersWithViews()
+    .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddDbContext<DatabaseContext>(o =>
 {
@@ -34,6 +39,17 @@ builder.Services.ConfigureApplicationCookie(options =>
 	options.AccessDeniedPath = "/Account/Unauthorized";
 });
 
+var supportedCultures = new[]
+{
+    new CultureInfo("es-CO"),
+};
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture("es-CO");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
 
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
@@ -41,8 +57,11 @@ builder.Services.AddTransient<SeederDb>();
 builder.Services.AddScoped<IUserHelper, UserHelper>();
 builder.Services.AddScoped<IDropDownListsHelper, DropDownListsHelper>();
 builder.Services.AddScoped<IAzureBlobHelper, AzureBlobHelper>();
+builder.Services.AddScoped<IOrderHelper, OrderHelper>();
 
 var app = builder.Build();
+
+app.UseRequestLocalization();
 
 SeederData();
 void SeederData()

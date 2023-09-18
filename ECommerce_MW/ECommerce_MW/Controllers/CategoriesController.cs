@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ECommerce_MW.Controllers
 {
 	[Authorize(Roles = "Admin")]
-	public class CategoriesController : Controller
+    public class CategoriesController : Controller
 	{
 		private readonly DatabaseContext _context;
 
